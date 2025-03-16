@@ -34,6 +34,7 @@ type Coord struct {
 type Condition struct {
 	Description string `json:"description"`
 	Main        string `json:"main"`
+	Icon        string `json:"icon"`
 } // Condition structure for weather conditions (description, icon)
 
 type Temperature struct {

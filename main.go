@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/shreya-sk/CLI-Weather-App/cmd"
@@ -11,33 +14,24 @@ import (
 
 // main() - Application entry point
 // setup() (*config.Config, *weather.WeatherService, error) - Sets up dependencies
-
 func main() {
-	// Load .env file at application startup
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: Error loading .env file")
 	}
 
-	// url := os.Getenv("OPENWEATHER_API_URL") + "?q=" + "sydney" + "&appid=" + os.Getenv("OPENWEATHER_API_KEY")
-	// resp, err := http.Get(url)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
+	interactive := flag.Bool("i", true, "Run in interactive mode")
 
-	// defer resp.Body.Close()
-
-	// body, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-
-	svc, err := setup()
+	weatherService, err := setup()
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error: %s\n", err)
+		os.Exit(1)
 	}
-
-	cmd.RunCLI(svc)
+	// Check which mode to run in
+	if *interactive {
+		cmd.RunInteractive(weatherService)
+	} else {
+		cmd.RunCLI(weatherService)
+	}
 
 }
 

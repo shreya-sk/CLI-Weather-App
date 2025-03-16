@@ -5,6 +5,8 @@ import (
 	"math"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 	// In service.go:
 )
 
@@ -13,46 +15,65 @@ import (
 // FormatTime(timestamp int64, timezone int) string - Formats time values
 // FormatWindDirection(degrees float64) string - Converts wind degrees to cardinal direction
 
-func FormatWeatherData(data *WeatherData) string {
-	// Create a string builder to efficiently build our output string
+func FormatWeatherData(weatherData *WeatherData) string {
+	// In weather/formatter.go
+
 	var output strings.Builder
 
-	// Add a header with location information
-	output.WriteString("=====================================\n")
-	output.WriteString(fmt.Sprintf("    Weather for %s, %s\n", data.Name, data.Sys.Country))
-	output.WriteString("=====================================\n")
+	// Create color formatters
+	headerColor := color.New(color.FgBlue, color.Bold)
+	locationColor := color.New(color.FgYellow, color.Bold)
+	sectionColor := color.New(color.FgGreen)
+	valueColor := color.New(color.FgWhite)
 
-	// Now add sections for different types of data:
-	// 1. Current conditions section
-	// Hint: You'll want to access data.Weather[0] if it exists
-	// Don't forget to check if the Weather slice has elements before accessing
-	output.WriteString("Current Conditions:\n")
-	if len(data.Weather) > 0 {
+	// Build the formatted output
+	output.WriteString("\n\n")
 
-		for i := 0; i < len(data.Weather); i++ {
-			output.WriteString(fmt.Sprintf("   %s\n", data.Weather[i].Description))
-		}
-	} else {
-		output.WriteString("No Information available on current conditions.")
+	// Add header with color
+	headerText := headerColor.Sprintf("=== WEATHER INFORMATION ===\n")
+	output.WriteString(headerText)
+
+	// Add location with color
+	locationText := locationColor.Sprintf("Location: %s, %s\n\n", weatherData.Name, weatherData.Sys.Country)
+
+	output.WriteString(locationText)
+
+	// Add ASCII art and weather condition
+	if len(weatherData.Weather) > 0 {
+		iconCode := weatherData.Weather[0].Icon
+		asciiArt := getWeatherASCII(iconCode)
+		asciiText := color.New(color.FgHiYellow).Sprintf("%s\n", asciiArt)
+		output.WriteString(asciiText)
+
+		conditionText := valueColor.Sprintf("  %s\n\n", weatherData.Weather[0].Description)
+		output.WriteString(conditionText)
 	}
-	output.WriteString("\n")
 
-	// 2. Temperature section
-	output.WriteString("Temperature:\n")
-	output.WriteString(fmt.Sprintf("   Current: %s\n", FormatTemperature(data.Main.Current)))
-	output.WriteString(fmt.Sprintf("   Min/Max: %s/%s\n", FormatTemperature(data.Main.Minimum), FormatTemperature(data.Main.Maximum)))
-	output.WriteString(fmt.Sprintf("   Feels Like: %s\n", FormatTemperature(data.Main.FeelsLike)))
-	output.WriteString(fmt.Sprintf("   Humidity: %d%%\n", data.Main.Humidity))
+	// Add temperature section
+	tempHeader := sectionColor.Sprintf("Temperature:\n")
+	output.WriteString(tempHeader)
 
-	output.WriteString("\n")
-	// Format current, feels like, min and max from data.Main
+	tempDetails := valueColor.Sprintf("  Current: %.1f°C\n", weatherData.Main.Current) +
+		valueColor.Sprintf("  Feels like: %.1f°C\n", weatherData.Main.FeelsLike) +
+		valueColor.Sprintf("  Min/Max: %.1f°C/%.1f°C\n\n", weatherData.Main.Minimum, weatherData.Main.Maximum) +
+		valueColor.Sprintf("  Humidity: %d%%\n\n", weatherData.Main.Humidity)
+	output.WriteString(tempDetails)
 
-	// 3. Wind information
-	output.WriteString("Wind:\n")
-	output.WriteString(fmt.Sprintf("   Speed: %.2fkmph %s\n", data.Wind.Speed, FormatWindDirection(data.Wind.Degrees)))
+	// Add conditions section
+	condHeader := sectionColor.Sprintf("Conditions:\n")
+	output.WriteString(condHeader)
 
-	// 4. Additional information
-	// You could include coordinates or other data you find useful
+	if len(weatherData.Weather) > 0 {
+		condDetails := valueColor.Sprintf("  %s\n\n", weatherData.Weather[0].Description)
+		output.WriteString(condDetails)
+	}
+
+	// Add wind section
+	windHeader := sectionColor.Sprintf("Wind:\n")
+	output.WriteString(windHeader)
+
+	windDetails := valueColor.Sprintf("  Speed: %.2f kmph %s\n", weatherData.Wind.Speed, FormatWindDirection(weatherData.Wind.Degrees))
+	output.WriteString(windDetails)
 
 	return output.String()
 }
@@ -73,4 +94,59 @@ func FormatWindDirection(degrees float64) string {
 	dirs := []string{"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"}
 	ix := int(math.Round(degrees / (360. / float64(len(dirs)))))
 	return dirs[ix%len(dirs)]
+}
+
+func getWeatherASCII(iconCode string) string {
+	// Match the icon code from OpenWeatherMap API
+	switch iconCode {
+	case "01d", "01n": // clear sky
+		return `
+    \   /
+     .-.
+  ― (   ) ―
+     '-'
+    /   \
+        `
+	case "02d", "02n", "03d", "03n", "04d", "04n": // clouds
+		return `
+      .--.
+   .-(    ).
+  (___.__)__)
+            
+        `
+	case "09d", "09n", "10d", "10n": // rain
+		return `
+     .-.
+    (   ).
+   (___(__)
+    ' ' ' '
+   ' ' ' '
+        `
+	case "11d", "11n": // thunderstorm
+		return `
+      .-.
+     (   ).
+    (___(__)
+     ⚡⚡⚡
+      ⚡⚡
+        `
+	case "13d", "13n": // snow
+		return `
+      .-.
+     (   ).
+    (___(__)
+     * * *
+    * * *
+        `
+	case "50d", "50n": // mist/fog
+		return `
+      .-.
+     (   ).
+    (___(__)
+    ― ― ― ―
+   ― ― ― ―
+        `
+	default:
+		return ""
+	}
 }
