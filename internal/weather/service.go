@@ -2,9 +2,11 @@ package weather
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/shreya-sk/CLI-Weather-App/internal/config"
 	// In service.go:
@@ -67,4 +69,40 @@ func (s *WeatherService) ParseWeatherResponse(data []byte) (*WeatherData, error)
 	return weatherData, nil
 
 	// Parse the JSON response
+}
+func (s *WeatherService) FindCities(cityName string) ([]Location, error) {
+	url := fmt.Sprintf("http://api.openweathermap.org/geo/1.0/direct?q=%s&limit=5&appid=%s",
+		url.QueryEscape(cityName), s.config.APIKey)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var locations []Location
+	err = json.Unmarshal(body, &locations)
+	if err != nil {
+		return nil, err
+	}
+
+	return locations, nil
+}
+
+func (s *WeatherService) GetWeatherByCoordinates(lat, lon float64) ([]byte, error) {
+	url := fmt.Sprintf("%s?lat=%f&lon=%f&appid=%s&units=%s",
+		s.config.BaseURL, lat, lon, s.config.APIKey, s.config.Units)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return io.ReadAll(resp.Body)
 }

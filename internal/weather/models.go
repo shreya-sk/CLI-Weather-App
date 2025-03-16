@@ -15,7 +15,16 @@ type WeatherData struct {
 	Wind    Wind        `json:"wind"`
 	Sys     Sys         `json:"sys"`
 	Name    string      `json:"name"`
+
 	// other root level fields you need
+}
+type Location struct {
+	Name       string            `json:"name"`
+	LocalNames map[string]string `json:"local_names,omitempty"`
+	Lat        float64           `json:"lat"`
+	Lon        float64           `json:"lon"`
+	Country    string            `json:"country"`
+	State      string            `json:"state,omitempty"`
 }
 type Coord struct {
 	Lon float64 `json:"lon"`

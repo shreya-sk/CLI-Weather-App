@@ -30,7 +30,7 @@ func FormatWeatherData(data *WeatherData) string {
 	if len(data.Weather) > 0 {
 
 		for i := 0; i < len(data.Weather); i++ {
-			output.WriteString(fmt.Sprintf(" %s\n", data.Weather[i].Description))
+			output.WriteString(fmt.Sprintf("   %s\n", data.Weather[i].Description))
 		}
 	} else {
 		output.WriteString("No Information available on current conditions.")

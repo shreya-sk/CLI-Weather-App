@@ -14,16 +14,63 @@ import (
 // printUsage() - Displays usage information
 
 func RunCLI(weatherService *weather.WeatherService) {
-
 	city := getCity()
-	weatherDataBytes, err := weatherService.GetWeatherByCity(city)
+
+	// Find matching cities
+	locations, err := weatherService.FindCities(city)
 	if err != nil {
 		displayError(err)
+		return
 	}
+
+	if len(locations) == 0 {
+		fmt.Printf("No cities found matching '%s'\n", city)
+		return
+	}
+
+	// If only one city found, use it directly
+	if len(locations) == 1 {
+		fetchAndDisplayWeather(weatherService, locations[0].Lat, locations[0].Lon)
+		return
+	}
+
+	// Display city options
+	fmt.Println("Multiple cities found. Please select one:")
+	for i, loc := range locations {
+		state := ""
+		if loc.State != "" {
+			state = ", " + loc.State
+		}
+		fmt.Printf("%d. %s, %s%s\n", i+1, loc.Name, loc.Country, state)
+	}
+
+	// Get user selection
+	var selection int
+	fmt.Print("Enter number: ")
+	_, err = fmt.Scanf("%d", &selection)
+	if err != nil || selection < 1 || selection > len(locations) {
+		fmt.Println("Invalid selection")
+		return
+	}
+
+	// Fetch and display weather for selected city
+	selectedLocation := locations[selection-1]
+	fetchAndDisplayWeather(weatherService, selectedLocation.Lat, selectedLocation.Lon)
+}
+
+func fetchAndDisplayWeather(weatherService *weather.WeatherService, lat, lon float64) {
+	weatherDataBytes, err := weatherService.GetWeatherByCoordinates(lat, lon)
+	if err != nil {
+		displayError(err)
+		return
+	}
+
 	weatherData, err := weatherService.ParseWeatherResponse(weatherDataBytes)
 	if err != nil {
 		displayError(err)
+		return
 	}
+
 	displayWeather(weatherData)
 }
 
