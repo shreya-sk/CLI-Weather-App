@@ -1,5 +1,3 @@
-# CLI-Weather-App
-Learning project #2! Trying to extend my golang capabilities to experiment with API retrievals :)
 # CLI-Weather-App (Docker Optimized)
 
 A command-line weather application built in Go that fetches real-time weather data from OpenWeatherMap API. This branch demonstrates **Docker multi-stage builds** for production-ready containerization.
@@ -135,30 +133,6 @@ RUN apk --no-cache add ca-certificates
 - **Global coverage**: Works with cities worldwide
 - **Detailed weather info**: Temperature, humidity, wind speed, conditions
 
-## 🔧 Environment Variables
-
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `OPENWEATHER_API_KEY` | Yes | Your OpenWeatherMap API key | `abc123def456` |
-| `OPENWEATHER_API_URL` | Yes | OpenWeatherMap API endpoint | `https://api.openweathermap.org/data/2.5/weather` |
-| `OPENWEATHER_UNITS` | No | Temperature units (default: metric) | `metric`, `imperial` |
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"no such file or directory"**
-- Ensure cross-compilation flags are set: `CGO_ENABLED=0 GOOS=linux`
-- Verify binary exists: `docker run -it weather-app:optimized sh` then `ls -la`
-
-**"API base URL not found"**
-- Set both required environment variables when running container
-- Check environment variable names match your config.go file
-
-**HTTPS certificate errors**
-- Ensure `ca-certificates` is installed in Alpine stage
-- Verify internet connectivity from container
-
 ## 📚 Learning Outcomes
 
 This project demonstrates:
@@ -169,9 +143,10 @@ This project demonstrates:
 - **Debugging containerized applications**
 - **Image size optimization** (98% reduction achieved)
 
-## 🔗 Branch Comparison
+## Branch Comparison
 
-- **`main`**: Basic Dockerfile (single-stage, 1.37GB)
+- **`main`**: Source Code (Go)
+- **`docker-setup`**: Basic Dockerfile (single-stage, 1.37GB)
 - **`docker-optimization`**: Multi-stage build (28.3MB) ← You are here
 - Compare branches to see the optimization difference!
 
