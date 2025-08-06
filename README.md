@@ -1,8 +1,4 @@
-# CLI-Weather-App (Docker Optimized)
-
-A command-line weather application built in Go that fetches real-time weather data from OpenWeatherMap API. This branch demonstrates **Docker multi-stage builds** for production-ready containerization.
-
-## 🐳 Docker Optimization Results
+# 🐳 Docker Optimization Results
 
 | Version | Image Size | Build Type |
 |---------|------------|------------|
@@ -145,20 +141,3 @@ RUN apk --no-cache add ca-certificates
 - Verify internet connectivity from container
 
 
-## Branch Comparison
-
-- **`main`**: Source Code (Go)
-- **`docker-setup`**: Basic Dockerfile (single-stage, 1.37GB)
-- **`docker-optimization`**: Multi-stage build (28.3MB) ← You are here
-- Compare branches to see the optimization difference!
-
-## 🛠️ Built With
-
-- **Go 1.23.2** - Programming language
-- **Docker** - Containerization
-- **Alpine Linux** - Minimal base image
-- **OpenWeatherMap API** - Weather data source
-
----
-
-*This is a learning project exploring Docker optimization techniques and Go development practices.*
