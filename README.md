@@ -2,18 +2,19 @@
 
 A command-line weather application built in Go that fetches real-time weather data from OpenWeatherMap API. This branch demonstrates **Docker multi-stage builds** for production-ready containerization.
 
-## 🐳 Docker Versions Available
+## 🛠️ Built With
 
-- **Basic Docker**: See this branch for simple containerization
-- **Optimized Docker**: Check `docker-optimization` branch for multi-stage builds (98% smaller!)
+- **Go 1.23.2** - Programming language
+- **Docker** - Containerization
+- **Alpine Linux** - Minimal base image
+- **OpenWeatherMap API** - Weather data source
 
-## 🐳 Docker Optimization Results
+## Branch Comparison
 
-| Version | Image Size | Build Type |
-|---------|------------|------------|
-| Basic Docker | 1.37GB | Single-stage |
-| **Optimized** | **28.3MB** | **Multi-stage** |
-
+- **`main`**: Source Code (Go) ← You are here
+- **`docker-setup`**: Basic Dockerfile (single-stage, 1.37GB)
+- **`docker-optimization`**: Multi-stage build (28.3MB) 
+- Compare branches to see the optimization difference!
 **98% size reduction** achieved through multi-stage builds!
 
 ## 🚀 Quick Start with Docker
@@ -142,20 +143,6 @@ This project demonstrates:
 - **Environment variable management** in containers
 - **Debugging containerized applications**
 - **Image size optimization** (98% reduction achieved)
-
-## Branch Comparison
-
-- **`main`**: Source Code (Go)
-- **`docker-setup`**: Basic Dockerfile (single-stage, 1.37GB)
-- **`docker-optimization`**: Multi-stage build (28.3MB) ← You are here
-- Compare branches to see the optimization difference!
-
-## 🛠️ Built With
-
-- **Go 1.23.2** - Programming language
-- **Docker** - Containerization
-- **Alpine Linux** - Minimal base image
-- **OpenWeatherMap API** - Weather data source
 
 ---
 
